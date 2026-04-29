@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task 3 – Advanced Styling & JavaScript</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090f;
+      --surface: #12121c;
+      --card: #1a1a2a;
+      --accent: #7c3aed;
+      --accent2: #06b6d4;
+      --gold: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --border: #1e1e2e;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,9,15,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent2); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 3rem; position: relative; z-index: 1; }
+    .section-label {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent2);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(6,182,212,0.3);
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+    }
+    h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 0.75rem;
+    }
+    .section-desc { color: var(--muted); font-size: 1rem; margin-bottom: 3rem; line-height: 1.7; max-width: 560px; }
+
+    /* ── RESPONSIVE DEMO ── */
+    #responsive { border-bottom: 1px solid var(--border); }
+    .breakpoints {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .bp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: all .3s;
+    }
+    .bp-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .bp-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .bp-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .bp-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .bp-card code { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent2); background: rgba(6,182,212,0.1); padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .responsive-live {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+    .responsive-live p { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
+    #sizeDisplay {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+    #deviceLabel { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+
+    /* ── QUIZ ── */
+    #quiz { border-bottom: 1px solid var(--border); }
+    .quiz-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 680px;
+    }
+    .quiz-progress {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      transition: width .4s ease;
+    }
+    .quiz-counter { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    .quiz-question { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.75rem; line-height: 1.5; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .option-btn {
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all .2s;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(124,58,237,0.1); }
+    .option-btn.correct { border-color: var(--success); background: rgba(16,185,129,0.15); color: var(--success); }
+    .option-btn.wrong { border-color: var(--error); background: rgba(239,68,68,0.15); color: var(--error); }
+    .quiz-result {
+      text-align: center;
+      padding: 1rem 0;
+      display: none;
+    }
+    .quiz-result .score { font-size: 4rem; font-weight: 800; font-family: 'Space Mono', monospace; }
+    .quiz-result p { color: var(--muted); margin-bottom: 1.5rem; }
+    .quiz-feedback { font-size: 0.85rem; color: var(--muted); margin-top: 1rem; min-height: 1.2rem; }
+    .next-btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.75rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all .2s;
+      display: none;
+    }
+    .next-btn:hover { background: #6d28d9; }
+    .restart-btn {
+      padding: 0.85rem 2rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .restart-btn:hover { background: #6d28d9; }
+
+    /* ── API SECTION ── */
+    .api-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .api-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+    .api-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .api-card p { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .fetch-btn {
+      padding: 0.7rem 1.5rem;
+      background: transparent;
+      border: 2px solid var(--accent2);
+      color: var(--accent2);
+      border-radius: 8px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .fetch-btn:hover { background: var(--accent2); color: #000; }
+    .fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .api-output {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      min-height: 60px;
+      color: var(--text);
+      display: none;
+    }
+    .api-output .loading { color: var(--muted); font-style: italic; }
+    .joke-setup { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .joke-punchline { font-weight: 700; color: var(--gold); }
+    .weather-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
+    .weather-item span:first-child { color: var(--muted); }
+    .weather-item span:last-child { font-weight: 600; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--surface); border-top: 1px solid var(--border); padding: 2rem 3rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) { .api-grid { grid-template-columns: 1fr; } .breakpoints { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      section { padding: 3.5rem 1.5rem; }
+      .quiz-box { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="brand">// task_3.js</div>
+    <ul class="nav-links">
+      <li><a href="#responsive">Responsive</a></li>
+      <li><a href="#quiz">Quiz</a></li>
+      <li><a href="#api">API Fetch</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══ RESPONSIVE DESIGN ══ -->
+  <section id="responsive">
+    <div class="section-label">Task 3 · Step 1</div>
+    <h2>Responsive <span style="color:var(--accent2)">Design</span></h2>
+    <div class="section-desc">Media queries ensure your web pages look flawless on every screen — mobile, tablet, and desktop.</div>
+    <div class="breakpoints">
+      <div class="bp-card">
+        <div class="bp-icon">📱</div>
+        <h3>Mobile</h3>
+        <p>Single-column layout, touch targets ≥ 44px, stacked navigation.</p>
+        <code>max-width: 640px</code>
+      </div>
+      <div class="bp-card">
+        <div class="bp-icon">💻</div>
+        <h3>Tablet</h3>
+        <p>Two-column grids, medium typography, collapsible navigation.</p>
+        <code>max-width: 900px</code>
+      </div>
+      <div class="bp-card">
+        <div class="bp-icon">🖥️</div>
+        <h3>Desktop</h3>
+        <p>Full multi-column layouts, hover states, larger font sizes.</p>
+        <code>min-width: 901px</code>
+      </div>
+    </div>
+    <div class="responsive-live">
+      <p>Live viewport detector — resize the window to see it change:</p>
+      <div id="sizeDisplay">— px</div>
+      <div id="deviceLabel">Detecting…</div>
+    </div>
+  </section>
+
+  <!-- ══ QUIZ ══ -->
+  <section id="quiz">
+    <div class="section-label">Task 3 · Step 2</div>
+    <h2>Interactive <span style="color:var(--accent)">Quiz</span></h2>
+    <div class="section-desc">Test your web development knowledge with this interactive JavaScript-powered quiz.</div>
+    <div class="quiz-box">
+      <div id="quizMain">
+        <div class="quiz-progress">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          <span class="quiz-counter" id="quizCounter">1 / 6</span>
+        </div>
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+      </div>
+      <div class="quiz-result" id="quizResult">
+        <div class="score" id="scoreDisplay"></div>
+        <p id="scoreLabel"></p>
+        <button class="restart-btn" onclick="startQuiz()">Restart Quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ API FETCH ══ -->
+  <section id="api">
+    <div class="section-label">Task 3 · Step 3</div>
+    <h2>API <span style="color:var(--gold)">Fetch</span></h2>
+    <div class="section-desc">JavaScript's fetch() API lets us pull real-time data from external services and display it dynamically.</div>
+    <div class="api-grid">
+      <div class="api-card">
+        <h3>😄 Joke API</h3>
+        <p>Fetches a random programming joke from the JokeAPI — a free, open REST API with hundreds of jokes.</p>
+        <button class="fetch-btn" id="jokeBtn" onclick="fetchJoke()">Fetch a Joke</button>
+        <div class="api-output" id="jokeOutput"></div>
+      </div>
+      <div class="api-card">
+        <h3>🌤️ Dog API</h3>
+        <p>Fetches a random dog breed image from the Dog CEO API — a fun public API for random dog images.</p>
+        <button class="fetch-btn" id="dogBtn" onclick="fetchDog()">Fetch a Dog</button>
+        <div class="api-output" id="dogOutput"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Task 3 · ApexPlanet Internship — Advanced Styling & JavaScript</footer>
+
+  <script>
+    // ── RESPONSIVE DETECTOR ──
+    function updateSize() {
+      const w = window.innerWidth;
+      document.getElementById('sizeDisplay').textContent = w + 'px wide';
+      let label = '';
+      if (w <= 640) label = '📱 Mobile layout active';
+      else if (w <= 900) label = '💻 Tablet layout active';
+      else label = '🖥️ Desktop layout active';
+      document.getElementById('deviceLabel').textContent = label;
+    }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+
+    // ── QUIZ ──
+    const questions = [
+      { q: 'Which HTML tag is used to create a hyperlink?', opts: ['<link>', '<a>', '<href>', '<url>'], ans: 1, exp: 'The <a> (anchor) tag creates hyperlinks. The href attribute specifies the URL.' },
+      { q: 'Which CSS property controls the text size?', opts: ['text-size', 'font-size', 'text-style', 'font-style'], ans: 1, exp: 'font-size controls the size of text. It accepts values in px, em, rem, %, etc.' },
+      { q: 'What does DOM stand for?', opts: ['Data Object Model', 'Document Object Model', 'Display Output Module', 'Dynamic Object Map'], ans: 1, exp: 'DOM stands for Document Object Model — the browser\'s tree representation of the HTML page.' },
+      { q: 'Which method is used to fetch data from an API in modern JavaScript?', opts: ['ajax()', 'httpRequest()', 'fetch()', 'getData()'], ans: 2, exp: 'The fetch() API is the modern way to make HTTP requests and is Promise-based.' },
+      { q: 'Which CSS unit is relative to the root element\'s font size?', opts: ['px', 'em', 'rem', 'vh'], ans: 2, exp: 'rem (root em) is relative to the root <html> element\'s font size, making it very predictable.' },
+      { q: 'Which JavaScript method selects an element by its ID?', opts: ['querySelector()', 'getElementById()', 'getElement()', 'selectById()'], ans: 1, exp: 'document.getElementById() selects a single element by its id attribute.' },
+    ];
+
+    let current = 0, score = 0;
+
+    function startQuiz() {
+      current = 0; score = 0;
+      document.getElementById('quizMain').style.display = 'block';
+      document.getElementById('quizResult').style.display = 'none';
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[current];
+      const pct = (current / questions.length) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('quizCounter').textContent = (current + 1) + ' / ' + questions.length;
+      document.getElementById('quizQuestion').textContent = q.q;
+      document.getElementById('quizFeedback').textContent = '';
+      document.getElementById('nextBtn').style.display = 'none';
+      document.getElementById('quizOptions').innerHTML = q.opts.map((opt, i) =>
+        `<button class="option-btn" onclick="answer(${i})">${opt}</button>`
+      ).join('');
+    }
+
+    function answer(i) {
+      const q = questions[current];
+      const btns = document.querySelectorAll('.option-btn');
+      btns.forEach(b => b.disabled = true);
+      btns[q.ans].classList.add('correct');
+      if (i !== q.ans) btns[i].classList.add('wrong');
+      else score++;
+      document.getElementById('quizFeedback').textContent = q.exp;
+      document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) { loadQuestion(); }
+      else { showResult(); }
+    }
+
+    function showResult() {
+      document.getElementById('quizMain').style.display = 'none';
+      const res = document.getElementById('quizResult');
+      res.style.display = 'block';
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('scoreDisplay').textContent = score + '/' + questions.length;
+      const pct = (score / questions.length) * 100;
+      const labels = ['Keep studying! 📖', 'Getting there! 💪', 'Good work! 🎯', 'Excellent! 🌟', 'Perfect score! 🏆'];
+      document.getElementById('scoreLabel').textContent = pct < 33 ? labels[0] : pct < 50 ? labels[1] : pct < 70 ? labels[2] : pct < 100 ? labels[3] : labels[4];
+    }
+
+    startQuiz();
+
+    // ── API FETCH ──
+    async function fetchJoke() {
+      const btn = document.getElementById('jokeBtn');
+      const out = document.getElementById('jokeOutput');
+      btn.disabled = true;
+      out.style.display = 'block';
+      out.innerHTML = '<span class="loading">Fetching joke…</span>';
+      try {
+        const res = await fetch('https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,racist,sexist');
+        const data = await res.json();
+        if (data.type === 'twopart') {
+          out.innerHTML = `<div class="joke-setup">${data.setup}</div><div class="joke-punchline">${data.delivery}</div>`;
+        } else {
+          out.innerHTML = `<div class="joke-punchline">${data.joke}</div>`;
+        }
+      } catch {
+        out.innerHTML = '<span style="color:var(--error)">Failed to fetch. Check your connection.</span>';
+      }
+      btn.disabled = false;
+    }
+
+    async function fetchDog() {
+      const btn = document.getElementById('dogBtn');
+      const out = document.getElementById('dogOutput');
+      btn.disabled = true;
+      out.style.display = 'block';
+      out.innerHTML = '<span class="loading">Fetching dog…</span>';
+      try {
+        const res = await fetch('https://dog.ceo/api/breeds/image/random');
+        const data = await res.json();
+        const breed = data.message.split('/')[4] || 'dog';
+        out.innerHTML = `
+          <div class="weather-item"><span>Breed</span><span>${breed}</span></div>
+          <div class="weather-item"><span>Image URL</span><span style="font-size:.75rem;word-break:break-all;color:var(--accent2)">${data.message}</span></div>
+          <img src="${data.message}" alt="Dog" style="margin-top:1rem;width:100%;border-radius:8px;max-height:200px;object-fit:cover" />
+        `;
+      } catch {
+        out.innerHTML = '<span style="color:var(--error)">Failed to fetch. Check your connection.</span>';
+      }
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
